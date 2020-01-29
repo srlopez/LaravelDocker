@@ -109,8 +109,3 @@ docker stop l1
 ```
 
 Enhora buena!
-
-# los archivos modificados son
-/app/resources/views/welcome.blade.php
-/app/routes/web.php
-/app/.env
