@@ -1,5 +1,6 @@
 # Laravel Docker
 Ejemplo de Dockerfile para crear una imagen Laravel 6.12
+https://github.com/srlopez/LaravelDocker/blob/master/Dockerfile
 
 Enlazado a https://hub.docker.com/repository/docker/srlopez/laravel para poder usarla desde clase.
 
