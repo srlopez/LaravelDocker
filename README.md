@@ -111,3 +111,8 @@ docker stop l1
 ```
 
 Enhora buena!
+
+# Nota final
+Este repositorio forma parte de un proyecto más grande localizado en
+
+https://dev.azure.com/srlopez/appdocker
