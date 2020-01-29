@@ -45,9 +45,9 @@ Modificamos las views, controllers,models, etc y lo que necesitemos, y mientras 
    # exit
 $ docker stop l6
 ```
-Esos pasos realmente los podemos hacer en uno sólo:
+Los pasos C y D, si sólo los hemos hecho para crear un proyecto, realmente los podemos hacer en uno sólo:
 ```
-docker run -it --rm -v $(PWD):/aqui laravel:6.12 composer create-project --prefer-dist laravel/laravel src
+$ docker run -it --rm -v $(PWD):/aqui laravel:6.12 composer create-project --prefer-dist laravel/laravel src
 ```
 Y ya tenemos el nuevo proyecto en ```src```
 
@@ -76,6 +76,18 @@ El Dockerfile podría ser:
     LABEL description="Mi Proyecto laravel"
     COPY src /var/www/laravel
     RUN /bin/chown www-data:www-data -R /var/www/laravel/storage /var/www/laravel/bootstrap/cache
+```
+En el que copiamos tu directorio ```src``` al directorio desde dondo Apache sirve el DocumentRoot.
+Si tu proyecto hubiese estado en un Git, en lugar de COPY podría ser:
+```
+   ARG CACHEBUST=1
+   RUN git clone https://tu_repositorio_git src
+   RUN rm -rf /var/www/laravel && \
+    mv /src/app /var/www/laravel && \
+    rm -rf /src && \
+    cd /var/www/laravel && \
+    npm install && \
+    composer install
 ```
 
 Y la creamos mediante estos comandos:
