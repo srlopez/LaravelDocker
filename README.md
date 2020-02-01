@@ -61,7 +61,7 @@ $ docker run -d --rm -v $(PWD)/src:/var/www/laravel -p 8888:80 --name l6 laravel
 $ docker stop l6
 ```
 
-# F.- En MODO DESARROLLO: Sobre escribimos CMD
+## F.- En MODO DESARROLLO: Sobre escribimos CMD
 Lo podemos lanzar ejecutando ```bash``` en lugar del CMD prefijado, y publicamos la puerta de desarrollo de Laravel, y la de Apache tambien si queremos. 
 ```
 $ docker run -it --rm -p 8000:8000 -p 8880:80 --name l6 -v $(PWD)/app:/var/www/laravel -w /var/www/laravel laravel:6.12 bash
@@ -69,7 +69,7 @@ $ docker run -it --rm -p 8000:8000 -p 8880:80 --name l6 -v $(PWD)/app:/var/www/l
    # php artisan serve --host 0.0.0.0
 ```
 
-# G.- Creación de una NUEVA IMAGEN con el nuevo proyecto
+## G.- Creación de una NUEVA IMAGEN con el nuevo proyecto
 O con otro que tú tengas ya creado. Mediante un Dockerfile con los comados para crear la imagen de nuestra nueva aplicación.
 
 El Dockerfile podría ser:
@@ -98,11 +98,11 @@ docker build -f Dockerfile.app -t miApp:1.0 .
 docker inspect -f {{.Config.Labels.description}} laraweb:1.0
 ```
 
-# F. AVISO: Antes de lanzarlo deberemos asegurarnos que hay una DB
+## H. AVISO: Antes de lanzarlo deberemos asegurarnos que hay una DB
 O bien linkada, o bien lo componemos en un docker-compose.
 Si no se te ocurre cómo, mira los ejemplos más abajo.
 
-# G. Lanzamos nuestra app
+## I. Lanzamos nuestra app
 ```
 docker run -d --rm -p 8880:80 --name l1 miApp:1.0
 ```
