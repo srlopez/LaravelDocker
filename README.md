@@ -49,7 +49,7 @@ $ docker stop l6
 ```
 Los pasos C y D, si sólo los hemos hecho para crear un proyecto, realmente los podemos hacer en uno sólo:
 ```
-$ docker run -it --rm -v $(PWD):/aqui laravel:6.12 composer create-project --prefer-dist laravel/laravel src
+$ docker run -it --rm -v $(PWD):/aqui -w /aqui laravel:6.12 composer create-project --prefer-dist laravel/laravel src
 ```
 Y ya tenemos el nuevo proyecto en ```src```
 
