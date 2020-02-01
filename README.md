@@ -112,6 +112,131 @@ docker stop l1
 
 Enhora buena!
 
+# H. Ejemplos
+Ej: de MYSQL con esta imagen
+Pongo ejemplos con contraseña y sin ella. Mientras aprendemos usaremos sin contraseña mysql 
+
+Ej: Lanzar un contenedor mysql
+```
+docker run --name sql8 -e MYSQL_ROOT_PASSWORD=1234 -d  mysql:8.0
+docker run --rm --name sql8 -e MYSQL_ALLOW_EMPTY_PASSWORD=yes -d mysql:8.0
+```
+Ej: Entrar en él y trabajar
+```
+docker exec -it sql8 bash
+     # exit
+```
+o lanzar un comando específico
+```
+docker exec -it sql8 mysql -u root -p  -e "show databases;" 
+docker exec -it sql8 mysql -e "show databases;"
+```
+
+Ej: Ejecutar específicamente el comando mysql
+```
+docker exec -it sql8 mysql -u root -p
+docker exec -it sql8 mysql 
+```
+
+Ej:Arrancar otro contenedor conectado al primero y ejecutar un comando contra el primero
+```
+docker run --link sql8  --rm -it mysql:8.0 mysql -h sql8 -u root -p -e "use mysql; show tables;"
+```
+
+### Persistencia de datos: USAMOS -v
+- En directorio local
+    con docker run: ```-v $(PWD)/dbdata:/var/lib/mysql```
+- En volumen docker
+```
+docker create volume dbdata
+```
+   con docker run:   ```-v dbdata:/var/lib/mysql```
+   
+podemos ver que contenedor usa un determinado volumen
+```
+docker ps -a --filter volume=dbdata
+```
+
+###  LARAVEL
+Ej: Lanzamos una db persistente (en docker/o no) y sin password
+```
+docker run --rm --name sql8 -e MYSQL_ALLOW_EMPTY_PASSWORD=yes -v $(PWD)/dbdata:/var/lib/mysql -d mysql:8.0
+docker exec -it sql8 mysql -e "create database laravel;"
+docker exec -it sql8 mysql -e "show databases;"
+```
+
+Ej: Creamos un proyecto laravel en el directorio host local
+Lanzando el comando de creación de proyecto desde una imagen por ej: srlopez/laravel:6.12
+```
+time docker run --rm -v $(PWD):/aqui -w /aqui -it srlopez/laravel:6.12 composer create-project --prefer-dist laravel/laravel src
+```
+Editamos lo que nos interese en ```.env```
+```
+   DB_HOST=sql8
+   DB_DATABASE=laravel
+```
+Tal vez deseemos eliminar la autenticación de Laravel en ```routes/api.php```. Sólo como ejemplo!!!
+```
+//Route::middleware('auth:api')->get('/user', function (Request $request) {
+Route::get('/user', function (Request $request) {
+        //return $request->user();
+        return ['name' => 'api', 'email' => 'a escribir'];
+});
+```
+Ej: Lanzamos de nuevo la imagen, enlazada a la db para ejecutar comandos (mira bien la linea de comandos).
+No olvidamos publicar las puertas con las que vayamos a trabajar
+```
+docker run --rm --name lara6 --link sql8 -p 8000:8000 -v $(PWD)/src:/pl -w /pl -it srlopez/laravel:6.12 bash
+```
+y en la consola podemos trabajar
+```
+   php artisan migrate
+   php artisan tinker
+      $user = new App\User();
+      $user->name = 'user1';
+      $user->password = Hash::make('1234');
+      $user->email = 'user1@email.com';
+      $user->save();
+      exit;
+   php artisan route:list
+   php artisan serve --host 0.0.0.0
+```
+En otra consola
+```
+docker exec -it sql8 mysql -e "use laravel; select id, name from users;"
+```
+Ej: COMPOSE
+docker-compose.yaml
+```
+version: '3.1'
+
+services:
+
+    api:
+        image: srlopez/laravel:6.12
+        container_name: api
+        volumes:
+            - ./src:/var/www/laravel
+        working_dir: /var/www/laravel
+        ports:
+            - 8000:8000
+        #modo desarrollo
+        command: ["php","artisan", "serve", "--host=0.0.0.0"]
+    
+    db:
+        image: mysql:8.0
+        container_name: sql8
+        environment:
+            MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+        volumes:
+            - ./dbdata:/var/lib/mysql
+        ports:
+            - 3306:3306
+```
+
+
+
+
 # Nota final
 Este repositorio forma parte de un proyecto más grande localizado en
 
