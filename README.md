@@ -10,16 +10,16 @@ Enlazado a https://hub.docker.com/repository/docker/srlopez/laravel para poder u
 ## A.- Creación/Descarga de la imagen laravel 6.12
 Copia el Dokerfile a tu directorio local y...
 ```
-$ docker build -f Dockerfile -t laravel:6.12 .
+$ docker build -t laravel:6.12 .
 $ docker inspect -f {{.Config.Labels.description}} laravel:6.12
 ```
-Este paso te lo puedes saltar si no necesitas el Dockerfile, y utilizas la imagen de DockerHub. En ese caso deberías bajartela y la puedes renombrar para hacer el nombre más corto, y utilizarla con más comodidad:
+Este paso te lo puedes saltar si no necesitas el Dockerfile, y utilizas la imagen de DockerHub. En ese caso deberías bajartela, la puedes renombrar para hacer el nombre más corto, y utilizarla con más comodidad:
 ```
 $ docker pull srlopez/laravel:6.12
 $ docker tag srlopez/laravel:6.12 laravel:6.12
 ```
 
-## B.- Lanzamos el contenedor (RUN) y probamos que funciona la web
+## B.- Lanzamos el contenedor (run) y probamos que funciona la web
 Ejecución
 ```
 $ docker run -d --rm -p 8888:80 --name l6 laravel:6.12
@@ -32,8 +32,8 @@ Y acabamos parando el contenedor, que como lo hemos lanzado con --rm se eliminar
 $ docker stop l6
 ```
 
-## C.- En MODO DESARROLLO: creamos un nuevo proyecto Laravel
-Mediante estos comandos ponemos la imagen a correr ```run``` con el directorio local montado en ```/aqui```. Al crear un proyecto laravel quedará persistente en el directorio, y entramos en ella con un ```exec``` para crear un nuevo proyecto
+## C.- En MODO DESARROLLO: Creamos un nuevo proyecto Laravel
+Mediante estos comandos ponemos la imagen a correr ```run``` con el directorio local montado en ```/aqui```. Al crear el proyecto laravel quedará persistente en el directorio. Entramos en el contenedor con un ```exec``` para crear el proyecto
 ```
 $ docker run -d --rm -v $(PWD):/aqui -p 8888:80 --name l6 laravel:6.12
 $ docker exec -it l6 bash
@@ -42,7 +42,7 @@ $ docker exec -it l6 bash
 ```
 
 ## D.- En MODO DESARROLLO: Edición de los archivos desde el hosts con tu editor favorito
-Modificamos las views, controllers,models, etc y lo que necesitemos, y mientras tanto podemos seguir ejecutando comandos en la shell del contenedor desde el que lanzamos el ```bash```
+Modificamos las views, controllers, models, etc y lo que necesitemos, y mientras tanto podemos seguir ejecutando comandos en la shell del contenedor desde el que lanzamos el ```bash```
 ```
    # exit
 $ docker stop l6
@@ -61,8 +61,8 @@ $ docker run -d --rm -v $(PWD)/src:/var/www/laravel -p 8888:80 --name l6 laravel
 $ docker stop l6
 ```
 
-## F.- En MODO DESARROLLO: Sobre escribimos CMD
-Lo podemos lanzar ejecutando ```bash``` en lugar del CMD prefijado, y publicamos la puerta de desarrollo de Laravel, y la de Apache tambien si queremos. 
+## F.- En MODO DESARROLLO: Sobrescribimos CMD
+Lo podemos lanzar ejecutando ```bash``` en lugar del CMD prefijado, y publicamos la puerta de desarrollo de Laravel, y la que usa Apache si lo queremos así. 
 ```
 $ docker run -it --rm -p 8000:8000 -p 8880:80 --name l6 -v $(PWD)/app:/var/www/laravel -w /var/www/laravel laravel:6.12 bash
    # php artisan tinker ....
@@ -72,14 +72,14 @@ $ docker run -it --rm -p 8000:8000 -p 8880:80 --name l6 -v $(PWD)/app:/var/www/l
 ## G.- Creación de una NUEVA IMAGEN con el nuevo proyecto
 O con otro que tú tengas ya creado. Mediante un Dockerfile con los comados para crear la imagen de nuestra nueva aplicación.
 
-El Dockerfile podría ser:
+El Dockerfile (Dockerfile.app) podría ser:
 ```
     FROM laravel:6.12
-    LABEL description="Mi Proyecto laravel"
+    LABEL description="mi proyecto laravel"
     COPY src /var/www/laravel
     RUN /bin/chown www-data:www-data -R /var/www/laravel/storage /var/www/laravel/bootstrap/cache
 ```
-Con ```COPY src /var/www/laravel``` copiamos el directorio ```src``` al directorio desde dondo Apache sirve el DocumentRoot.
+Con ```COPY src /var/www/laravel``` copiamos el directorio ```src``` al directorio desde donde Apache sirve el DocumentRoot.
 Si tu proyecto hubiese estado en un Git, en lugar de la linea ```COPY``` podrías usar:
 ```
    ARG CACHEBUST=1
@@ -95,7 +95,7 @@ Una vez que tenemos el Dockerfile configurado.
 Creamos la imagen mediante estos comandos:
 ```
 docker build -f Dockerfile.app -t miApp:1.0 .
-docker inspect -f {{.Config.Labels.description}} laraweb:1.0
+docker inspect -f {{.Config.Labels.description}} miApp:1.0
 ```
 
 ## H. AVISO: Antes de lanzarlo deberemos asegurarnos que hay una DB
@@ -111,7 +111,7 @@ Lanzamos un navegador y a localhost:8880, y lo paramos.
 docker stop l1
 ```
 
-Enhora buena!
+**¡Enhora buena!**
 
 # === Ejemplos ===
 ## MYSQL
